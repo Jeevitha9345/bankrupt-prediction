@@ -1,0 +1,126 @@
+================================================================================
+BANKRUPTCY PREDICTION MACHINE LEARNING PIPELINE - TRAINING SUMMARY
+================================================================================
+
+1. DATASET OVERVIEW
+-------------------
+- Dataset 1 Raw Rows: 1,026 (Columns: 69)
+- Dataset 2 Raw Rows: 2,643 (Columns: 69)
+- Combined Raw Rows: 3,669
+- Labeled Cleaned Rows: 3,660 (9 unlabeled/NaN rows excluded)
+- Number of Financial Features: 66 (x1 to x66)
+- Target Classes: 4 (Bankrupt: 0, Financial Distress: 1, Probably Bankrupt: 2, Healthy: 3)
+- Total Unique Companies: 440
+- Unique Financial Years: 1999 to 2024
+
+2. DATA QUALITY & INTEGRITY
+---------------------------
+- Missing Value Handling: Median imputation fitted strictly on Training set and saved to models/imputer.pkl.
+- Scaling: StandardScaler fitted strictly on Training set and saved to models/scaler.pkl.
+- Duplicate Handling: Checked and deduplicated exact duplicate rows while preserving multiple financial years per company.
+- Non-numeric Values Treated: Coerced annotation strings (such as CIRP notes in x1 and literal "NA" in x7, x8, x16, x22) to NaN for consistent numerical imputation.
+
+3. DATA LEAKAGE MITIGATION
+--------------------------
+- Investigation: 116 companies appear across multiple financial years.
+- Strategy: Applied Company-Level Stratified Group Splitting (StratifiedGroupKFold, random_state=42).
+- Zero Leakage: 0 overlapping companies between Training (349 companies, 2,888 rows) and Test (91 companies, 772 rows).
+- The test set remained completely isolated and untouched during training and tuning.
+
+4. CLASS IMBALANCE MITIGATION
+-----------------------------
+- Comparison: Evaluated Class Weights vs. SMOTE inside 5-fold cross-validation.
+- Selection: SMOTE applied strictly on the training fold yielded higher cross-validation Macro F1 and was adopted.
+- Untouched Test: SMOTE was never applied to validation folds or the final test set.
+
+5. HYPERPARAMETER TUNING & 5-FOLD CROSS-VALIDATION
+--------------------------------------------------
+Optimized for Macro F1 via 5-Fold Stratified Cross-Validation:
+{
+  "Logistic Regression": {
+    "C": 10.0,
+    "solver": "lbfgs"
+  },
+  "Random Forest": {
+    "max_depth": null,
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "n_estimators": 200
+  },
+  "XGBoost": {
+    "colsample_bytree": 0.8,
+    "learning_rate": 0.1,
+    "max_depth": 6,
+    "n_estimators": 200,
+    "subsample": 0.8
+  },
+  "CatBoost": {
+    "depth": 6,
+    "iterations": 250,
+    "l2_leaf_reg": 3,
+    "learning_rate": 0.1
+  },
+  "LightGBM": {
+    "learning_rate": 0.1,
+    "max_depth": 10,
+    "n_estimators": 200,
+    "num_leaves": 31
+  }
+}
+
+CV Scores:
+{
+  "Logistic Regression": {
+    "Mean_CV_Accuracy": 0.8088310416246085,
+    "Std_CV_Accuracy": 0.005548751822283007,
+    "Mean_CV_Macro_F1": 0.8092940302440418,
+    "Std_CV_Macro_F1": 0.00602306523356226
+  },
+  "Random Forest": {
+    "Mean_CV_Accuracy": 0.9695453219981607,
+    "Std_CV_Accuracy": 0.0037356325156723004,
+    "Mean_CV_Macro_F1": 0.9694935984296162,
+    "Std_CV_Macro_F1": 0.0037523274094267787
+  },
+  "XGBoost": {
+    "Mean_CV_Accuracy": 0.9789627868374419,
+    "Std_CV_Accuracy": 0.0017560435389902503,
+    "Mean_CV_Macro_F1": 0.978920866967881,
+    "Std_CV_Macro_F1": 0.001765108100707638
+  },
+  "CatBoost": {
+    "Mean_CV_Accuracy": 0.9543796684686301,
+    "Std_CV_Accuracy": 0.005115437425419068,
+    "Mean_CV_Macro_F1": 0.9542702080477194,
+    "Std_CV_Macro_F1": 0.005107597439776322
+  },
+  "LightGBM": {
+    "Mean_CV_Accuracy": 0.9834884068698923,
+    "Std_CV_Accuracy": 0.0015932538983135776,
+    "Mean_CV_Macro_F1": 0.9834699947814963,
+    "Std_CV_Macro_F1": 0.0015980984317042273
+  }
+}
+
+6. FINAL MODEL PERFORMANCE ON UNTOUCHED TEST SET
+------------------------------------------------
+              Model  Accuracy  Precision  Recall  Macro F1  Weighted F1  Bankrupt Recall  Financial Distress Recall  Probably Bankrupt Recall  Healthy Recall  Mean CV Macro F1  Mean CV Accuracy
+Logistic Regression    0.7150     0.5236  0.6346    0.5500       0.7507           0.6044                     0.4483                    0.7436          0.7422            0.8093            0.8088
+      Random Forest    0.8303     0.6228  0.6565    0.6346       0.8424           0.6923                     0.2759                    0.7692          0.8885            0.9695            0.9695
+            XGBoost    0.8446     0.6540  0.7277    0.6817       0.8546           0.6703                     0.5517                    0.7949          0.8937            0.9789            0.9790
+           CatBoost    0.8225     0.6212  0.7039    0.6504       0.8377           0.6703                     0.4828                    0.7949          0.8676            0.9543            0.9544
+           LightGBM    0.8446     0.6487  0.6933    0.6664       0.8515           0.6374                     0.4828                    0.7436          0.9094            0.9835            0.9835
+
+7. BEST MODEL IDENTIFICATION
+----------------------------
+- Best Accuracy Model: XGBoost (0.8446)
+- Best Macro-F1 Model: XGBoost (0.6817)
+- Best Bankruptcy Recall Model: Random Forest (0.6923)
+- Best Overall Model: XGBoost
+
+8. LIMITATIONS & RECOMMENDATIONS
+--------------------------------
+- Indian corporate bankruptcy datasets contain severe structural class imbalance (Healthy companies dominate >70% of observations).
+- Tree-based ensemble models (CatBoost, XGBoost, Random Forest) significantly outperform linear models due to complex non-linear financial ratio interactions.
+- Feature importance analysis indicates solvency, working capital, and operational profitability ratios (such as x5, x13, x24, x45) are decisive leading indicators of corporate failure.
+================================================================================

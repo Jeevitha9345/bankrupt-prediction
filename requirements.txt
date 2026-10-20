@@ -1,0 +1,12 @@
+﻿pandas==2.2.3
+numpy==2.1.1
+scikit-learn==1.7.0
+xgboost==3.4.1
+catboost==1.2.10
+lightgbm==4.7.0
+imbalanced-learn==0.14.2
+joblib==1.5.1
+matplotlib==3.9.2
+seaborn==0.13.2
+openpyxl==3.1.5
+xlrd==2.0.2

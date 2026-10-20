@@ -1,0 +1,8 @@
+Model,Accuracy,Precision,Recall,Macro F1,Weighted F1,Bankrupt Recall,Financial Distress Recall,Probably Bankrupt Recall,Healthy Recall,Mean CV Macro F1,Mean CV Accuracy
+Logistic Regression,0.715,0.5236,0.6346,0.55,0.7507,0.6044,0.4483,0.7436,0.7422,0.8093,0.8088
+Random Forest,0.8303,0.6228,0.6565,0.6346,0.8424,0.6923,0.2759,0.7692,0.8885,0.9695,0.9695
+XGBoost,0.8446,0.654,0.7277,0.6817,0.8546,0.6703,0.5517,0.7949,0.8937,0.9789,0.979
+CatBoost,0.8225,0.6212,0.7039,0.6504,0.8377,0.6703,0.4828,0.7949,0.8676,0.9543,0.9544
+LightGBM,0.8446,0.6487,0.6933,0.6664,0.8515,0.6374,0.4828,0.7436,0.9094,0.9835,0.9835
+Two-Stage Cascaded Pipeline (Enhanced),0.8614,0.718,0.7042,0.7072,0.862,0.6593,0.4225,0.7692,0.9511,0.725,0.884
+Solvency Gate Model (Healthy vs Distressed),0.9339,0.912,0.895,0.9033,0.9341,0.895,0.895,0.895,0.9511,0.921,0.941

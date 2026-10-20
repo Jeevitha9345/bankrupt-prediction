@@ -1,0 +1,6 @@
+Model,Accuracy,Macro F1,Weighted F1,Bankrupt Recall,Financial Distress Recall,Probably Bankrupt Recall,Healthy Recall
+XGBoost,99.13%,0.9898,0.9913,98.9%,97.1%,99.5%,99.7%
+LightGBM,99.18%,0.9905,0.9918,100.0%,97.7%,98.5%,99.9%
+CatBoost,99.46%,0.9934,0.9946,98.9%,98.3%,99.8%,99.8%
+Random Forest,98.31%,0.972,0.9831,92.6%,98.6%,95.8%,99.8%
+Logistic Regression,74.77%,0.6348,0.7178,50.5%,27.2%,63.7%,98.3%
